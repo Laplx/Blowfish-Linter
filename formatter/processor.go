@@ -28,9 +28,22 @@ func ProcessDir(dir string, within bool, force bool, inspect bool, defaultDir st
 func ReorganizeFile(path string, defaultDir string) string {
 	dir := filepath.Dir(path)
 	filename := strings.TrimSuffix(filepath.Base(path), ".md")
+
 	if filepath.Base(path) == "index.md" {
+		if defaultDir != "" {
+			entries, _ := os.ReadDir(defaultDir)
+			for _, entry := range entries {
+				src := filepath.Join(defaultDir, entry.Name())
+				dest := filepath.Join(dir, entry.Name())
+				data, err := os.ReadFile(src)
+				if err == nil {
+					os.WriteFile(dest, data, 0644)
+				}
+			}
+		}
 		return path
 	}
+
 	targetDir := filepath.Join(dir, filename)
 	os.MkdirAll(targetDir, os.ModePerm)
 	newPath := filepath.Join(targetDir, "index.md")
@@ -39,6 +52,7 @@ func ReorganizeFile(path string, defaultDir string) string {
 		fmt.Printf("移动失败: %s\n", path)
 		return path
 	}
+
 	if defaultDir != "" {
 		entries, _ := os.ReadDir(defaultDir)
 		for _, entry := range entries {
