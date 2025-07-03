@@ -1,0 +1,13 @@
+# Title, date, and draft are required in front matter.
+
+front_matter:
+  title: H1InMd          # FileName | your_fix_title | (first from top)H1InMd | ""
+  date: FileName         # FileName | your_fix_date | ""
+  tags: []               # your_fix_tags | [] | null
+  authors: ["Laplx"]     # your_fix_authors | [] | null
+  category: ""           # your_fix_category | ""
+  draft: true            # true | false | ""
+
+katex:
+  inline: true           # true(default: \\[formula\\]) | false | your_symbol(e.g."$$to$$", needs escaping)
+  multiline: true        # true(default: $$formula\\\next_formula$$) | false | your_symbol
