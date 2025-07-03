@@ -97,9 +97,9 @@ Katex:
 
 ## Further Features
 
- ⭕ TypeIt 块避免 `>` 引用前缀
+ ⭕ LLM API 实现自动添加 Tags
 
- ⭕ Markdown 语法一致性检查
+ ⭕ Markdown 语法一致性检查（TypeIt 块避免 `>` 引用前缀）
 
  ⭕ 详细统计报告输出
 

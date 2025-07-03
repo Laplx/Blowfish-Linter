@@ -79,6 +79,7 @@ func ProcessFile(path string, within bool, force bool, inspect bool) {
 		yamlStr, _ := yaml.Marshal(&emptyFm)
 		yamlStr = []byte(forceQuotedStrings(string(yamlStr)))
 		newContent := fmt.Sprintf("---\n%s---\n", yamlStr)
+		content = trimLeadingNewlines(content)
 		if !strings.Contains(content, "{{< katex >}}") {
 			newContent += "{{< katex >}}\n"
 		}
@@ -141,10 +142,11 @@ func ProcessFile(path string, within bool, force bool, inspect bool) {
 		yamlStr = []byte(forceQuotedStrings(string(yamlStr)))
 		fixed := fmt.Sprintf("---\n%s---\n", yamlStr)
 		parts := strings.SplitN(content, "---", 3)
-		if !strings.Contains(parts[2], "{{< katex >}}") {
+		body := trimLeadingNewlines(parts[2])
+		if !strings.Contains(body, "{{< katex >}}") {
 			fixed += "{{< katex >}}\n"
 		}
-		fixed += FixLatex(parts[2], config.Cfg.InlineKatex, config.Cfg.MultiKatex)
+		fixed += FixLatex(body, config.Cfg.InlineKatex, config.Cfg.MultiKatex)
 		os.WriteFile(path, []byte(fixed), 0644)
 		fmt.Printf("已修正: %s\n", path)
 	}
@@ -217,4 +219,8 @@ func extractH1(content string) (string, string) {
 	}
 
 	return h1Found, strings.Join(newLines, "\n")
+}
+
+func trimLeadingNewlines(s string) string {
+	return regexp.MustCompile(`^\s*\n*`).ReplaceAllString(s, "")
 }

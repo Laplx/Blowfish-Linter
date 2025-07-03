@@ -10,8 +10,8 @@ func FixLatex(content string, inline string, multiline string) string {
 		if inline == "true" {
 			content = re.ReplaceAllString(content, `\\($1\\)`)
 		} else {
-			delimit_re := regexp.MustCompile(`(.+?)to(.+?)`)
-			if match := delimit_re.FindStringSubmatch(inline); match != nil {
+			delimitRe := regexp.MustCompile(`(.+?)to(.+?)`)
+			if match := delimitRe.FindStringSubmatch(inline); match != nil {
 				front, back := match[1], match[2]
 				re = regexp.MustCompile(regexp.QuoteMeta(front) + `(.+?)` + regexp.QuoteMeta(back))
 				content = re.ReplaceAllString(content, front+`${1}`+back)
@@ -20,16 +20,19 @@ func FixLatex(content string, inline string, multiline string) string {
 			}
 		}
 	}
-	if multiline != "false" {
-		re := regexp.MustCompile(`\$\$(.*?)\$\$`)
-		content = re.ReplaceAllString(content, `$$$1$$`) // preserve delimiters $$
-		re = regexp.MustCompile(`\\{2}`)
-		if multiline == "true" {
-			content = re.ReplaceAllString(content, `\\\`)
-		} else {
-			content = re.ReplaceAllString(content, multiline)
-		}
 
+	if multiline != "false" {
+		reBlock := regexp.MustCompile(`\$\$(?s)(.*?)\$\$`)
+		content = reBlock.ReplaceAllStringFunc(content, func(match string) string {
+			inner := match[2 : len(match)-2]
+			reSlash := regexp.MustCompile(`\\{2}`)
+			if multiline == "true" {
+				inner = reSlash.ReplaceAllString(inner, `\\\`)
+			} else {
+				inner = reSlash.ReplaceAllString(inner, multiline)
+			}
+			return `$$` + inner + `$$`
+		})
 	}
 	return content
 }
